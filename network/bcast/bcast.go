@@ -3,11 +3,14 @@ package bcast
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net"
 	"reflect"
 
 	"github.com/TTK4145-2022-students/Network-go-group-78/network/conn"
 )
+
+const BufSize = 2048
 
 // Encodes received values from `chans` into type-tagged JSON, then broadcasts
 // it on `port`
@@ -32,6 +35,9 @@ func Transmitter(port int, chans ...interface{}) {
 			TypeId: typeNames[chosen],
 			JSON:   jsonstr,
 		})
+		if len(ttj) > BufSize {
+			log.Printf("bcast: message (%v b) exceeds buffer size (%v b). Will be ignored by receiver", len(ttj), BufSize)
+		}
 		conn.WriteTo(ttj, addr)
 	}
 }
@@ -45,7 +51,7 @@ func Receiver(port int, chans ...interface{}) {
 		chansMap[reflect.TypeOf(ch).Elem().String()] = ch
 	}
 
-	var buf [1024]byte
+	var buf [BufSize]byte
 	conn := conn.DialBroadcastUDP(port)
 	for {
 		n, _, e := conn.ReadFrom(buf[0:])
