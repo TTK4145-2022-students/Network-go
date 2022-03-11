@@ -1,11 +1,12 @@
 package bcast
 
 import (
-	"Network-go/network/conn"
 	"encoding/json"
 	"fmt"
 	"net"
 	"reflect"
+
+	"github.com/TTK4145-2022-students/Network-go-group-78/network/conn"
 )
 
 // Encodes received values from `chans` into type-tagged JSON, then broadcasts
@@ -108,13 +109,12 @@ func checkArgs(chans ...interface{}) {
 		elemTypes[i] = elemType
 
 		// Element type must be encodable with JSON
-		checkTypeRecursive(elemType, []int{i+1})
+		checkTypeRecursive(elemType, []int{i + 1})
 
 	}
 }
 
-
-func checkTypeRecursive(val reflect.Type, offsets []int){
+func checkTypeRecursive(val reflect.Type, offsets []int) {
 	switch val.Kind() {
 	case reflect.Complex64, reflect.Complex128, reflect.Chan, reflect.Func, reflect.UnsafePointer:
 		panic(fmt.Sprintf(
